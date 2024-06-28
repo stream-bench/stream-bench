@@ -33,15 +33,15 @@ def get_llm(series: str, model_name: str):
     if series == 'gemini':
         from stream_bench.llms.gemini_vertex import Gemini
         return Gemini(model_name)
-    # elif series == 'gemini_dev':
-    #     from stream_bench.llms.gemini_dev import GeminiDev
-    #     return GeminiDev(model_name)
+    elif series == 'gemini_dev':
+        from stream_bench.llms.gemini_dev import GeminiDev
+        return GeminiDev(model_name)
     elif series == 'openai':
         from stream_bench.llms.oai_chat import OpenAIChat
         return OpenAIChat(model_name)
-    # elif series == 'anthropic':
-    #     from stream_bench.llms.claude import ClaudeChat
-    #     return ClaudeChat(model_name)
+    elif series == 'anthropic':
+        from stream_bench.llms.claude import ClaudeChat
+        return ClaudeChat(model_name)
     # elif series == 'anthropic_vertex':
     #     from stream_bench.llms.vertex_claude import ClaudeChat
     #     return ClaudeChat(model_name)
