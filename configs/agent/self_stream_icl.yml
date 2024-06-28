@@ -1,0 +1,16 @@
+agent_name: "self_stream_icl"
+mode: "normal"
+seed: 42
+# LLM hyperparameters
+llm:
+  series: "openai"  # ["anthropic", "gemini_dev"]
+  model_name: "gpt-3.5-turbo-0125"  # ["claude-3-haiku-20240307", "gemini-1.0-pro-001"]
+  temperature: 0.0
+  max_tokens: 64
+# RAG configurations
+rag:
+  embedding_model: "BAAI/bge-base-en-v1.5"
+  top_k: 16
+  order: "similar_at_bottom"  # ["similar_at_top", "similar_at_bottom", "random"]
+  rag_filename: null
+  seed: 42

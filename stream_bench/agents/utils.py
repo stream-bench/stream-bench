@@ -124,11 +124,8 @@ class RAG:
         distances, indices = self.index.search(np.expand_dims(embedding, axis=0), top_k)
         distances = distances[0].tolist()
         indices = indices[0].tolist()
-        print(distances)
-        print(indices)
         
         results = [{'link': str(idx), '_score': {'faiss': dist}} for dist, idx in zip(distances, indices)]
-        print(results)
         # Re-order the sequence based on self.retrieve_order
         if self.retrieve_order == RetrieveOrder.SIMILAR_AT_BOTTOM.value:
             results = list(reversed(results))
