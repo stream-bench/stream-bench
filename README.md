@@ -7,7 +7,7 @@
 **Note:** Work in progress. Feel free to leave github issues / pull requests if you encounter any issues!
 
 ## Steps to Reproduce the Experiments
-**Note:** Currently only the `ZeroShot` baseline on the `DDXPlus` dataset is implemented. We are refactoring the code for other baselines and datasets. Stay tuned!
+**Note:** Currently only the baselines on the `DDXPlus` dataset is implemented. We are refactoring the code for other baselines and datasets. Stay tuned!
 
 ### Install Required Packages
 Run the following commands to install the requirements:
@@ -24,7 +24,7 @@ export OAI_KEY=<your_openai_api_key>
 ```
 
 ### Run the Main Script
-In this example, the `ZeroShot` baseline on the `DDXPlus` dataset is executed. Written scripts for running other baselines or datasets can be found in `./scripts`.
+In this example, the `ZeroShot` baseline on the `DDXPlus` dataset is executed. Written scripts for running other datasets can be found in `./scripts`.
 ```
 python -m stream_bench.pipelines.run_bench \
     --agent_cfg "configs/agent/zeroshot.yml" \
@@ -32,6 +32,7 @@ python -m stream_bench.pipelines.run_bench \
     --entity "photocopier" \
     --use_wandb
 ```
+If you want to run other baselines on the dataset, you can modify `--agent_cfg` to different `<baseline_name>.yml` files, which are located in the `./configs/agent` folder.
 
 ## Steps to Implement Your Own Methods
 Work in progress
