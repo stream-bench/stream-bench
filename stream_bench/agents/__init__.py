@@ -1,9 +1,22 @@
 from .zeroshot import ZeroShotAgent
+from .fewshot import FewShotAgent
+from .cot import CoTAgent
+from .iter_prompt import IterPromptAgent
+from .scratchpad import ScratchPadAgent
+from .fewshot_rag import FewShotRAGAgent
+from .multiagent_rag import MultiAgent
 
 classes = locals()
 
 TASKS = {
-    'zeroshot': ZeroShotAgent
+    "zeroshot": ZeroShotAgent,
+    "fewshot": FewShotAgent,
+    "cot": CoTAgent,
+    "self_refine": IterPromptAgent,
+    "grow_prompt": ScratchPadAgent,
+    "mem_prompt": FewShotRAGAgent,
+    "self_stream_icl": FewShotRAGAgent,
+    "ma_rr": MultiAgent
 }
 
 def load_agent(agent_name):
