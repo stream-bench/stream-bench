@@ -1,9 +1,11 @@
 from .base import Bench
 from .ddxplus import create_ddxplus
+from .ds_1000 import DS1000
 classes = locals()
 
 TASKS = {
-    'ddxplus': create_ddxplus()
+    "ddxplus": create_ddxplus(),
+    "ds_1000": DS1000
 }
 
 def load_benchmark(benchmark_name) -> Bench:
