@@ -24,14 +24,18 @@ frozenlist==1.4.1
 fsspec==2024.5.0
 gitdb==4.0.11
 GitPython==3.1.43
+google-ai-generativelanguage==0.6.6
 google-api-core==2.19.1
+google-api-python-client==2.135.0
 google-auth==2.30.0
+google-auth-httplib2==0.2.0
 google-cloud-aiplatform==1.49.0
 google-cloud-bigquery==3.25.0
 google-cloud-core==2.4.1
 google-cloud-resource-manager==1.12.3
 google-cloud-storage==2.17.0
 google-crc32c==1.5.0
+google-generativeai==0.7.1
 google-resumable-media==2.7.1
 googleapis-common-protos==1.63.2
 groq==0.9.0
@@ -40,6 +44,7 @@ grpcio==1.64.1
 grpcio-status==1.62.2
 h11==0.14.0
 httpcore==1.0.5
+httplib2==0.22.0
 httpx==0.27.0
 huggingface-hub==0.23.4
 idna==3.7
@@ -81,6 +86,7 @@ pyasn1_modules==0.4.0
 pydantic==2.7.4
 pydantic_core==2.18.4
 Pygments==2.18.0
+pyparsing==3.1.2
 python-dateutil==2.9.0.post0
 pytz==2024.1
 PyYAML==6.0.1
@@ -110,6 +116,7 @@ triton==2.3.1
 typer==0.12.3
 typing_extensions==4.12.2
 tzdata==2024.1
+uritemplate==4.1.1
 urllib3==2.2.2
 vertexai==1.49.0
 wandb==0.17.3
