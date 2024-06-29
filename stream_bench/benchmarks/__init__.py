@@ -1,9 +1,15 @@
 from .base import Bench
 from .ddxplus import create_ddxplus
+from .ds_1000 import DS1000
+from .hotpotqa_distract import HotpotQADistract
+from .toolbench import ToolBench
 classes = locals()
 
 TASKS = {
-    'ddxplus': create_ddxplus()
+    "ddxplus": create_ddxplus(),
+    "ds_1000": DS1000,
+    "hotpotqa_distract": HotpotQADistract,
+    "toolbench": ToolBench
 }
 
 def load_benchmark(benchmark_name) -> Bench:

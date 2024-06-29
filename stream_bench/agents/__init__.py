@@ -5,6 +5,7 @@ from .iter_prompt import IterPromptAgent
 from .scratchpad import ScratchPadAgent
 from .fewshot_rag import FewShotRAGAgent
 from .multiagent_rag import MultiAgent
+from .gt import GroundTruthAgent
 
 classes = locals()
 
@@ -16,7 +17,8 @@ TASKS = {
     "grow_prompt": ScratchPadAgent,
     "mem_prompt": FewShotRAGAgent,
     "self_stream_icl": FewShotRAGAgent,
-    "ma_rr": MultiAgent
+    "ma_rr": MultiAgent,
+    "gt": GroundTruthAgent
 }
 
 def load_agent(agent_name):
