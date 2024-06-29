@@ -1,6 +1,8 @@
 import re
 import copy
 import textwrap
+import warnings
+warnings.filterwarnings("ignore")
 
 from stream_bench.benchmarks.base import Bench
 from stream_bench.benchmarks.utils import strip_all_lines
