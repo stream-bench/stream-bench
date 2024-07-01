@@ -7,7 +7,6 @@
 **Note:** Work in progress. Feel free to leave github issues / pull requests if you encounter any issues!
 
 ## Steps to Reproduce the Experiments
-**Note:** Currently only the baselines on the `DDXPlus` and `DS-1000` datasets are implemented. We are refactoring the code for other datasets. Stay tuned!
 
 ### (Only for Text-to-SQL Datasets) Download SQL Data
 For `Spider`, `CoSQL`, and `BIRD` datasets, one would need to download the SQL databases from the following links:

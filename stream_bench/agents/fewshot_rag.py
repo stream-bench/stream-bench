@@ -1,10 +1,14 @@
 import re
+import json
 from enum import Enum
+from colorama import Fore, Style
 
 from stream_bench.agents.base import Agent
-from stream_bench.agents.utils import parse_pred_text, text_in_label_set, RAG
+from stream_bench.agents.utils import RAG
+from stream_bench.benchmarks.utils import extract_json_string
 
 class Method(Enum):
+    CORRECT_SELF_COT = "self_stream_icl_cot"
     CORRECT_SELF = "self_stream_icl"
     MEM_PROMPT = "mem_prompt"
 
@@ -41,12 +45,15 @@ class FewShotRAGAgent(Agent):
             config["rag"]["rag_filename"] = self.log_path + ".db"
         self.rag = RAG(config["rag"])
         self.update_cnt = 0
+        self.cur_rationale = None  # for the case of "self_stream_icl_cot"
 
     def __call__(
         self,
         question: str,
         prompt_zeroshot: str,
         fewshot_template: str,
+        prompt_cot: str,
+        fewshotcot_template: str,
         parse_template: str = None,
         label_set: set[str] = None,
         **kwargs
@@ -70,17 +77,23 @@ class FewShotRAGAgent(Agent):
         elif self.mode == "only_incorrect":
             shots = n_shots
         
+        if self.method == Method.CORRECT_SELF_COT.value:
+            template_w_rag = fewshotcot_template
+            template_wo_rag = prompt_cot
+        else:
+            template_w_rag = fewshot_template
+            template_wo_rag = prompt_zeroshot
         if len(shots):
             fewshot_text = "\n\n\n".join(shots).replace("\\", "\\\\")
             try:
-                prompt = re.sub(pattern=r"\{fewshot_text\}", repl=fewshot_text, string=fewshot_template)
+                prompt = re.sub(pattern=r"\{fewshot_text\}", repl=fewshot_text, string=template_w_rag)
             except Exception as e:
                 error_msg = f"Error ```{e}``` caused by these shots. Logged to jsonl."
                 print(error_msg)
                 shots.append(error_msg)  # For analyzing errors afterwards
-                prompt = prompt_zeroshot
+                prompt = template_wo_rag
         else:
-            prompt = prompt_zeroshot
+            prompt = template_wo_rag
         # Inference
         pred_text, pred_info = self.llm(prompt=prompt, max_tokens=self.llm_config["max_tokens"], temperature=self.llm_config["temperature"])
         # logging
@@ -97,27 +110,32 @@ class FewShotRAGAgent(Agent):
             "num_input_tokens": pred_info["num_input_tokens"],
             "num_output_tokens": pred_info["num_output_tokens"]
         })
-        if label_set is not None:
-            # (Optional) Parse pred_text into one of the labels in label_set
-            pred_text = parse_pred_text(pred_text, label_set)  # simple heuristics for removing leading and trailing characters
-            if not text_in_label_set(text=pred_text, label_set=label_set):
-                prompt_parse = parse_template.format(model_output=pred_text)
-                parse_text, parse_info = self.llm(prompt=prompt_parse, max_tokens=self.llm_config["max_tokens"], temperature=self.llm_config["temperature"])
-                self.update_log_info(log_data={
-                    "input_parse": prompt_parse,
-                    "output_parse": parse_text,
-                    "logprobs_parse": parse_info["logprobs"],
-                    "num_inference_call": 1,
-                    "num_success_call": 1 if (parse_text[:5] != "error") else 0,
-                    "num_input_tokens": parse_info["num_input_tokens"],
-                    "num_output_tokens": parse_info["num_output_tokens"]
-                })
-                return parse_text
+        # Extract rationale if CoT is used
+        if self.method == Method.CORRECT_SELF_COT.value:
+            json_text = extract_json_string(pred_text)
+            parse_text = pred_text
+            if json_text and (self.config["bench_name"] == "ddxplus"):
+                try:
+                    obj = json.loads(json_text)
+                    if "rationale" not in obj:
+                        parse_text += "\nWarning: rationale not found in the output."
+                        print(Fore.YELLOW + "Lack rationale" + Style.RESET_ALL)
+                    else:
+                        self.cur_rationale = obj["rationale"]
+                    if "answer" not in obj:
+                        parse_text += "\nWarning: answer not found in the output"
+                        print(Fore.RED + "Lack answer" + Style.RESET_ALL)
+                    else:
+                        parse_text = obj["answer"]
+                except json.JSONDecodeError:
+                    parse_text += "\nError: JSONDecodeError"
+                    print(Fore.RED + "JSONDecodeError" + Style.RESET_ALL)
+            return parse_text
         return pred_text
 
     def update(self, has_feedback: bool, **feedbacks) -> bool:
         question = feedbacks["question"]
-        if self.method == Method.CORRECT_SELF.value:
+        if self.method in {Method.CORRECT_SELF.value, Method.CORRECT_SELF_COT.value}:
             assert ("self_output" in feedbacks) and ("is_correct" in feedbacks)
             if not feedbacks["is_correct"]:
                 return False  # If not correct -> Do not update RAG
@@ -136,8 +154,13 @@ class FewShotRAGAgent(Agent):
 
         if self.method == Method.MEM_PROMPT.value:
             chunk = feedbacks["memprompt_template"].format(question=question, answer=answer, correctness=correctness_text)
-        else:
+        elif self.method == Method.CORRECT_SELF.value:
             chunk = feedbacks["shot_template"].format(question=question, answer=answer)
+        elif self.method == Method.CORRECT_SELF_COT.value:
+            chunk = feedbacks["shot_template"].format(question=question + f"\nRationale: {self.cur_rationale}", answer=answer)
+        else:
+            raise NotImplementedError
+
         if (self.bench.DATASET_PATH == "hotpot_qa") and (self.bench.DATASET_NAME == "distractor"):
             index = question.index("Question:")
             question = question[index:].strip()
