@@ -99,6 +99,29 @@ class MedicalDiagnosisBench(Bench):
         Now provide the diagnosis for the patient in the following format: <number>. <diagnosis>""")
         return strip_all_lines(prompt)
 
+    @staticmethod
+    def get_fewshotcot_template(
+        profile: str,
+        option_text: str
+    ) -> str:
+        prompt = textwrap.dedent(f"""\
+        Act as a medical doctor and diagnose the patient based on the provided patient profile.
+        
+        All possible diagnoses for you to choose from are as follows (one diagnosis per line, in the format of <number>. <diagnosis>):
+        {option_text}
+
+        Here are some example cases.
+
+        {{fewshot_text}}
+
+        Now it's your turn.
+
+        {profile}
+
+        Now, take a deep breath and work on this problem step-by-step to derive the most likely diagnosis.
+        Provide your output in the following valid JSON format: {{"rationale": "<your_rationale>", "answer": "<number>. <diagnosis>"}}""")
+        return strip_all_lines(prompt)
+
     def get_fewshot_prompt(
         self,
         profile: str,
@@ -173,6 +196,7 @@ class MedicalDiagnosisBench(Bench):
         row_input["prompt_fewshot"] = self.get_fewshot_prompt(profile, option_text)
         row_input["prompt_cot"] = self.get_cot_prompt(profile, option_text)
         row_input["fewshot_template"] = self.get_fewshot_template(profile, option_text)
+        row_input["fewshotcot_template"] = self.get_fewshotcot_template(profile, option_text)
         row_input["feedback_template"] = self.get_feedback_template(profile, option_text)
         row_input["refine_template"] = self.get_refine_template(profile, option_text)
         return row_input

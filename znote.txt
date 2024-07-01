@@ -1,0 +1,4 @@
+conda activate stream_bench
+export OAI_KEY=$(cat ../api_keys/openai_brianckwu.txt)
+export GOOGLE_API_KEY=$(cat ../api_keys/google_pay.txt)
+export ANTHROPIC_KEY=$(cat ../api_keys/anthropic.txt)

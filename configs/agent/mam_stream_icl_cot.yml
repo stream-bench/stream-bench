@@ -1,0 +1,24 @@
+agent_name: "ma_rr_cot"
+seed: 42
+warmup_steps: 0
+# LLM hyperparameters
+llms:
+  - series: "openai"
+    model_name: "gpt-3.5-turbo-0125"
+    temperature: 0.0
+    max_tokens: 512  # Use 512 for CoT on all datasets
+  - series: "gemini_dev"
+    model_name: "gemini-1.0-pro-001"
+    temperature: 0.0
+    max_tokens: 512
+  - series: "anthropic"
+    model_name: "claude-3-haiku-20240307"
+    temperature: 0.0
+    max_tokens: 512
+# RAG configurations
+rag:
+  embedding_model: "BAAI/bge-base-en-v1.5"
+  top_k: 16
+  order: "similar_at_bottom"  # ["similar_at_top", "similar_at_bottom", "random"]
+  rag_filename: null
+  seed: 42

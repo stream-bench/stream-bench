@@ -1,15 +1,19 @@
 import re
+import json
 import random
 import numpy as np
 from enum import Enum
+from colorama import Fore, Style
 
 from stream_bench.agents.base import Agent
 from stream_bench.agents.utils import RAG, get_llm, setup_logger
+from stream_bench.benchmarks.utils import extract_json_string
 
 class Method(Enum):
     RR = "ma_rr"  # multi-agent round-robin; NOTE: the round-robin MAM-StreamICL method in our StreamBench paper
     TS = "ma_ts"  # multi-agent Thompson sampling
     DTS = "ma_dts"  # multi-agent dynamic Thompson sampling
+    RR_COT = "ma_rr_cot"  # multi-agent round-robin with CoT
 
 class MultiAgent(Agent):
     METHODS = {member.value for member in Method}
@@ -37,33 +41,43 @@ class MultiAgent(Agent):
         self.S = np.zeros(self.K)  # sum of rewards for each arm
         self.F = np.zeros(self.K)  # sum of (1 - reward)s for each arm
         self.cur_arm = 0
-        self.algo_name = self.method.split("_")[-1]
+        self.algo_name = self.method.split("_")[1]
         self.total_steps = 0
         # RAG
         if config["rag"]["rag_filename"] is None:
             config["rag"]["rag_filename"] = self.log_path + ".db"
         self.rag = RAG(config["rag"])
+        self.cur_rationale = None  # for the case of Method.RR_COT
 
     def __call__(
         self,
         question: str,
         prompt_zeroshot: str,
         fewshot_template: str,
+        prompt_cot: str,
+        fewshotcot_template: str,
         **kwargs
     ) -> str:
         shots = self.rag.retrieve(query=question, top_k=self.rag.top_k) if (self.rag.insert_acc > 0) else []
         # Determine prompt
+        if self.method == Method.RR_COT.value:
+            template_w_rag = fewshotcot_template
+            template_wo_rag = prompt_cot
+        else:
+            template_w_rag = fewshot_template
+            template_wo_rag = prompt_zeroshot
+
         if len(shots):
             fewshot_text = "\n\n\n".join(shots).replace("\\", "\\\\")
             try:
-                prompt = re.sub(pattern=r"\{fewshot_text\}", repl=fewshot_text, string=fewshot_template)
+                prompt = re.sub(pattern=r"\{fewshot_text\}", repl=fewshot_text, string=template_w_rag)
             except Exception as e:
                 error_msg = f"Error ```{e}``` caused by these shots. Logged to jsonl."
                 print(error_msg)
                 shots.append(error_msg)
-                prompt = prompt_zeroshot
+                prompt = template_wo_rag
         else:
-            prompt = prompt_zeroshot
+            prompt = template_wo_rag
         # Inference
         if self.total_steps < self.warmup_steps:
             arm = self.pull_rr()
@@ -88,6 +102,27 @@ class MultiAgent(Agent):
             "num_input_tokens": pred_info["num_input_tokens"],
             "num_output_tokens": pred_info["num_output_tokens"]
         })
+        # Extract rationale if CoT is used
+        if self.method == Method.RR_COT.value:
+            json_text = extract_json_string(pred_text)
+            parse_text = pred_text
+            if json_text and (self.config["bench_name"] == "ddxplus"):
+                try:
+                    obj = json.loads(json_text)
+                    if "rationale" not in obj:
+                        parse_text += "\nWarning: rationale not found in the output."
+                        print(Fore.YELLOW + "Lack rationale" + Style.RESET_ALL)
+                    else:
+                        self.cur_rationale = obj["rationale"]
+                    if "answer" not in obj:
+                        parse_text += "\nWarning: answer not found in the output"
+                        print(Fore.RED + "Lack answer" + Style.RESET_ALL)
+                    else:
+                        parse_text = obj["answer"]
+                except json.JSONDecodeError:
+                    parse_text += "\nError: JSONDecodeError"
+                    print(Fore.RED + "JSONDecodeError" + Style.RESET_ALL)
+            return parse_text
         return pred_text
 
     def update(self, has_feedback: bool, **feedbacks) -> bool:
@@ -97,7 +132,10 @@ class MultiAgent(Agent):
             return False
         question = feedbacks["question"]
         answer = feedbacks["self_output"]
-        chunk = feedbacks["shot_template"].format(question=question, answer=answer)
+        if self.method == Method.RR_COT.value:
+            chunk = feedbacks["shot_template"].format(question=question + f"\nRationale: {self.cur_rationale}", answer=answer)
+        else:
+            chunk = feedbacks["shot_template"].format(question=question, answer=answer)
         self.rag.insert(key=question, value=chunk)
         return True
 
