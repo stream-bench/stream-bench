@@ -20,7 +20,7 @@ def retry_with_exponential_backoff(
         anthropic.BadRequestError, anthropic.InternalServerError, anthropic.RateLimitError,
         urllib.error.HTTPError, urllib.error.URLError,
         groq.RateLimitError, groq.InternalServerError, groq.APIConnectionError,
-        together.error.RateLimitError,
+        together.error.TogetherException,
         ValueError, IndexError, UnboundLocalError
     )
     """Retry a function with exponential backoff."""
