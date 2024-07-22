@@ -2,7 +2,7 @@ import re
 import copy
 import textwrap
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("default")
 
 from stream_bench.benchmarks.base import Bench
 from stream_bench.benchmarks.utils import strip_all_lines
@@ -258,7 +258,7 @@ class DS1000(Bench):
             + 'test_execution(code)\n'
             + ('test_string(code)\n'  if 'test_string(' in code_context  else '\n')
         )
-        results = execution.check_correctness_single_proc(
+        results = execution.check_correctness(
             test_program,
             timeout=self.timeout,
             completion_id=completion_id
