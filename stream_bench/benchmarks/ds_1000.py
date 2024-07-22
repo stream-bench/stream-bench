@@ -202,7 +202,7 @@ class DS1000(Bench):
         exec_context = self.extract_after_exec_content(row["code_context"])
         row_input = copy.deepcopy(row)
         row_input["question"] = row["prompt"].strip()
-        row_input["label_text"] = row["reference_code"].strip()
+        row_input["label_text"] = row["reference_code"]
         row_input["prompt_zeroshot"] = self.get_zeroshot_prompt(question=row_input["question"], exec_context=exec_context)
         row_input["prompt_fewshot"] = self.get_fewshot_prompt(question=row_input["question"], exec_context=exec_context)
         row_input["prompt_cot"] = self.get_cot_prompt(question=row_input["question"], exec_context=exec_context)
