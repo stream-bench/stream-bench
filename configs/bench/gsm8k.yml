@@ -1,0 +1,4 @@
+bench_name: "gsm8k"
+split: "test"
+feedback: "correctness"
+seed: 42
