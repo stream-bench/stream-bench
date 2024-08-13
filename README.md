@@ -9,10 +9,11 @@
 ## Steps to Reproduce the Experiments
 
 ### (Only for Text-to-SQL Datasets) Download SQL Data
-For `Spider`, `CoSQL`, and `BIRD` datasets, one would need to download the SQL databases from the following links:
+For `Spider`, `CoSQL`, and `BIRD` datasets, one would need to download the SQL databases with the following command:
 ```
-Work in progress
+python download_text2sql_data.py
 ```
+The script will download, unzip, and extract Text-to-SQL databases to the `./data` directory automatically.
 
 ### Install Required Packages
 Run the following commands to install the requirements:
