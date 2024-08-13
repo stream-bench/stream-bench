@@ -53,7 +53,7 @@ class FewShotRAGAgent(Agent):
         prompt_zeroshot: str,
         fewshot_template: str,
         prompt_cot: str,
-        fewshotcot_template: str,
+        fewshotcot_template: str = None,
         parse_template: str = None,
         label_set: set[str] = None,
         **kwargs
