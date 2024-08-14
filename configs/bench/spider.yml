@@ -1,0 +1,5 @@
+bench_name: "spider"
+split: "test"
+feedback: "correctness"  # ["no_user_feedback", "weak_feedback", "ground_truth"]
+seed: 42
+db_path: "./data/spider"
