@@ -1,4 +1,4 @@
-# Source : https://github.com/xlang-ai/DS-1000/blob/main/simplified/execution.py
+# Source : https://github.com/xlang-ai/DS-1000/blob/main/execution.py
 # OpenAI's lightweight execution method, but without reliability_guard since
 # several data science libraries require system or file operations.
 # https://github.com/openai/human-eval/blob/master/human_eval/execution.py
@@ -6,124 +6,51 @@ from typing import Optional, Dict
 import contextlib
 import io
 import os
-import multiprocessing
+import shutil
 import platform
 import signal
 import tempfile
+from colorama import Fore, Style
 
-def unsafe_execute(check_program, result_queue):
+def check_correctness(program: str, timeout: float, completion_id: Optional[int] = None) -> Dict:
+    """
+    Evaluates the functional correctness of a completion by running the test
+    suite provided in the problem.
+
+    :param completion_id: an optional completion ID so we can match
+        the results later even if execution finishes asynchronously.
+    """
+    result = []
+
     with create_tempdir():
-        # These system calls are needed when cleaning up tempdir.
-        import os
-        import shutil
 
+        # These system calls are needed when cleaning up tempdir.
         rmtree = shutil.rmtree
         rmdir = os.rmdir
         chdir = os.chdir
 
         # Disable functionalities that can make destructive changes to the test.
-        # Run program.
+        # reliability_guard()
+
+        # Construct the check program and run it.
+        check_program = program
+
         try:
             exec_globals = {}
-            exec(check_program, exec_globals)
-            result_queue.put("passed")
+            with swallow_io():
+                with time_limit(timeout):
+                    exec(check_program, exec_globals)
+            result.append("passed")
         except TimeoutException:
-            result_queue.put("timed out")
+            result.append("timed out")
         except BaseException as e:
-            result_queue.put(f"failed: {e}")
+            print(str(completion_id), Fore.RED + str(type(e)) + Style.RESET_ALL, e)
+            result.append(f"failed: {e}")
 
         # Needed for cleaning up.
         shutil.rmtree = rmtree
         os.rmdir = rmdir
         os.chdir = chdir
-
-
-def check_correctness_single_proc(program: str, timeout: float,
-                      completion_id: Optional[int] = None) -> Dict:
-    """
-    Evaluates the functional correctness of a completion by running the test
-    suite provided in the problem. 
-
-    :param completion_id: an optional completion ID so we can match
-        the results later even if execution finishes asynchronously.
-    """
-    result_queue = multiprocessing.Queue()
-    # result = manager.list()
-    # p = multiprocessing.Process(target=unsafe_execute, args=(check_program, result, timeout))
-    p = multiprocessing.Process(target=unsafe_execute, args=(program, result_queue))
-    p.start()
-    p.join(timeout=timeout + 1)
-    if p.is_alive():
-        p.kill()
-    result = []
-    try:
-        result.append(result_queue.get(timeout=1))
-    except multiprocessing.queues.Empty:
-        result.append("timed out")
-    if not result:
-        result.append("timed out")
-
-
-    if not result:
-        result.append("timed out")
-
-    return dict(
-        passed=result[0] == "passed",
-        result=result[0],
-        completion_id=completion_id,
-    )
-
-def check_correctness(program: str, timeout: float,
-                      completion_id: Optional[int] = None) -> Dict:
-    """
-    Evaluates the functional correctness of a completion by running the test
-    suite provided in the problem. 
-
-    :param completion_id: an optional completion ID so we can match
-        the results later even if execution finishes asynchronously.
-    """
-
-    def unsafe_execute():
-        with create_tempdir():
-
-            # These system calls are needed when cleaning up tempdir.
-            import os
-            import shutil
-            rmtree = shutil.rmtree
-            rmdir = os.rmdir
-            chdir = os.chdir
-
-            # Disable functionalities that can make destructive changes to the test.
-            # reliability_guard()
-
-            # Construct the check program and run it.
-            check_program = (
-                program
-            )
-
-            try:
-                exec_globals = {}
-                with swallow_io():
-                    with time_limit(timeout):
-                        exec(check_program, exec_globals)
-                result.append("passed")
-            except TimeoutException:
-                result.append("timed out")
-            except BaseException as e:
-                result.append(f"failed: {e}")
-
-            # Needed for cleaning up.
-            shutil.rmtree = rmtree
-            os.rmdir = rmdir
-            os.chdir = chdir
-
-    manager = multiprocessing.Manager()
-    result = manager.list()
-    p = multiprocessing.Process(target=unsafe_execute)
-    p.start()
-    p.join(timeout=timeout + 1)
-    if p.is_alive():
-        p.kill()
 
     if not result:
         result.append("timed out")
