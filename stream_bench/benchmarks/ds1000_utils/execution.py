@@ -44,7 +44,7 @@ def check_correctness(program: str, timeout: float, completion_id: Optional[int]
         except TimeoutException:
             result.append("timed out")
         except BaseException as e:
-            print(str(completion_id), Fore.RED + str(type(e)) + Style.RESET_ALL, e)
+            # print(str(completion_id), Fore.RED + str(type(e)) + Style.RESET_ALL, e)
             result.append(f"failed: {e}")
 
         # Needed for cleaning up.
