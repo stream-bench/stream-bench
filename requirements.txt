@@ -26,6 +26,7 @@ datasets
 evaluate
 matplotlib
 seaborn
+gdown
 
 # Logging
 wandb
@@ -34,3 +35,6 @@ wandb
 tqdm
 colorama
 func_timeout
+ipykernel
+bitsandbytes
+accelerate

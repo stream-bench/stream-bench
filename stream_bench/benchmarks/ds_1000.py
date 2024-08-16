@@ -192,7 +192,7 @@ class DS1000(Bench):
         for row in self.FEWSHOTS:
             shot = self.get_shot_template().format(
                 question=row["prompt"].strip(),
-                answer=row["reference_code"].strip()
+                answer=row["reference_code"]
             )
             shots.append(shot)
         return "\n\n\n".join(shots).replace("\\", "\\\\")
@@ -225,7 +225,7 @@ class DS1000(Bench):
                 pattern=r"```python(.*?)```",
                 string=generation,
                 flags=re.DOTALL
-            ).group(1).strip()
+            ).group(1)
         except Exception as e:
             match = generation
         return match
@@ -293,7 +293,7 @@ class DS1000(Bench):
             "question": row["prompt"].strip(),
             "self_output": pred_str,
             "is_correct": res["correct"],
-            "ground_truth": row["reference_code"].strip(),
+            "ground_truth": row["reference_code"],
             "shot_template": self.get_shot_template(),
             "memprompt_template": self.get_memprompt_template()
         }

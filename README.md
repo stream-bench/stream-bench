@@ -8,13 +8,6 @@
 
 ## Steps to Reproduce the Experiments
 
-### (Only for Text-to-SQL Datasets) Download SQL Data
-For `Spider`, `CoSQL`, and `BIRD` datasets, one would need to download the SQL databases with the following command:
-```
-python download_text2sql_data.py
-```
-The script will download, unzip, and extract Text-to-SQL databases to the `./data` directory automatically.
-
 ### Install Required Packages
 Run the following commands to install the requirements:
 ```
@@ -22,6 +15,13 @@ conda create -n stream_bench python=3.10
 conda activate stream_bench
 python -m pip install -r requirements.txt
 ```
+
+### (Only for Text-to-SQL Datasets) Download SQL Data
+For `Spider`, `CoSQL`, and `BIRD` datasets, one would need to download the SQL databases with the following command:
+```
+python download_text2sql_data.py
+```
+The script will download, unzip, and extract Text-to-SQL databases to the `./data` directory automatically.
 
 ### Setup Environment Variables
 Depending on the method(s) to run, you might need to set the following API keys:
@@ -52,6 +52,9 @@ python -m stream_bench.pipelines.run_bench \
     --use_wandb
 ```
 If you want to run other baselines on the dataset, you can modify `--agent_cfg` to different `<baseline_name>.yml` files, which are located in the `./configs/agent` folder.
+
+### (Optional) Interactive Notebook
+If you want a step-by-step walkthrough, please refer to `playground.ipynb`.
 
 ## Steps to Implement Your Own Methods
 If you want to implement your own LLM agent, you may subclass the `Agent` base class in `./stream_bench/agents/base.py` and implement the following methods:
