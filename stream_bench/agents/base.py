@@ -58,7 +58,7 @@ class Agent:
         raise NotImplementedError
 
     def get_name(self) -> str:
-        return f'{self.__class__.__name__}__{self.llm_config["series"]}__{self.llm_config["model_name"]}'
+        return f'{self.__class__.__name__}__{self.llm_config["series"]}__{self.llm_config["model_name"].split("/")[-1]}'
 
     def reset_log_info(self) -> None:
         self.log_info = {KEY: 0 for KEY in self.LOG_KEYS}
