@@ -3,6 +3,7 @@ import re
 import textwrap
 from tqdm import tqdm
 from datasets import Dataset
+from colorama import Fore, Style
 
 from stream_bench.benchmarks.base import Bench
 from stream_bench.benchmarks.text2sql_utils.sqlite_interpreter import execute_model
@@ -55,6 +56,7 @@ class GeneralText2SQL(Bench):
         db_path: str = None,
         agent = None,
         agent_callback = None,
+        distribution_shift = False,
         **kwargs
     ) -> None:
         super().__init__(config={})
@@ -66,7 +68,11 @@ class GeneralText2SQL(Bench):
         self.agent_callback = None
         self.knowledge = knowledge
         self.total = 0
-        self.eval_set = self.dataset[self.split].shuffle(seed=self.seed)
+        if distribution_shift:  # order the instances by sorting the field "db_id"
+            print(Fore.CYAN + "Sorting the instances by 'db_id' for distribution shift evaluation." + Style.RESET_ALL)
+            self.eval_set = self.dataset[self.split].sort("db_id")
+        else:
+            self.eval_set = self.dataset[self.split].shuffle(seed=self.seed)
         self.initialize()
 
     def get_dataset(self) -> Dataset:
