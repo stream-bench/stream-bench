@@ -63,6 +63,24 @@ If you want to implement your own LLM agent, you may subclass the `Agent` base c
 - `__call__`: The inference logics of the agent. This should return the agent's prediction in string.
 - `update`: The updating logics of the agent.
 
+## Steps to Run Your Own LLMs
+If you want to run agents with your own backbone LLMs, you have two options:
+
+1. Using HuggingFace models: upload / choose your HuggingFace model, and set the configurations in `./configs/agent/<agent_name>.yml`. For example, if you want to run the zero-shot baseline with `google/gemma-2-2b-it`, set the configurations as follows:
+```
+agent_name: "zeroshot"
+llm:
+  series: "hf_model"
+  model_name: "google/gemma-2-2b-it"
+  temperature: 0.0
+  max_tokens: 32
+```
+
+2. Others: for further customization, you can subclass the `LLM` base class in `./stream_bench/llms/base.py` and implement the following methods:
+
+- `__init__`: Setup LLM configs here.
+- `__call__`: Inference flows of prompting the LLM and get a tuple of (response_text, response_info). See the implementation of `./stream_bench/llms/oai_chat.py` and `./stream_bench/llms/hf_model.py` as examples.
+
 ## (Optional) StreamBench Datasets
 If you want to download the datasets on StreamBench, we have collected the datasets on HuggingFace:
 https://huggingface.co/datasets/appier-ai-research/StreamBench
