@@ -53,6 +53,9 @@ python -m stream_bench.pipelines.run_bench \
 ```
 If you want to run other baselines on the dataset, you can modify `--agent_cfg` to different `<baseline_name>.yml` files, which are located in the `./configs/agent` folder.
 
+### (Optional) Interactive Notebook
+If you want a step-by-step walkthrough, please refer to `playground.ipynb`.
+
 ## Steps to Implement Your Own Methods
 If you want to implement your own LLM agent, you may subclass the `Agent` base class in `./stream_bench/agents/base.py` and implement the following methods:
 
