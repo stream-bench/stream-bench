@@ -3,4 +3,4 @@ split: "test"
 feedback: "correctness"  # ["no_user_feedback", "weak_feedback", "ground_truth"]
 seed: 42
 db_path: "./data/bird/dev_databases"
-distribution_shift: true
+distribution_shift: false
