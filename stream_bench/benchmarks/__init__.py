@@ -4,6 +4,7 @@ from .ds_1000 import DS1000
 from .hotpotqa_distract import HotpotQADistract
 from .toolbench import ToolBench
 from .gsm8k import GSM8KBench
+from .math import MATHBench
 classes = locals()
 
 TASKS = {
@@ -11,7 +12,8 @@ TASKS = {
     "ds_1000": DS1000,
     "hotpotqa_distract": HotpotQADistract,
     "toolbench": ToolBench,
-    "gsm8k": GSM8KBench
+    "gsm8k": GSM8KBench,
+    "math": MATHBench,
 }
 
 def load_benchmark(benchmark_name) -> Bench:

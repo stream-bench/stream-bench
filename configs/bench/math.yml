@@ -1,0 +1,4 @@
+bench_name: "math"
+split: "test"
+feedback: "correctness"
+seed: 42
