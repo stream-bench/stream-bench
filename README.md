@@ -4,7 +4,7 @@
 
 **Paper link:** https://arxiv.org/abs/2406.08747
 
-**(New Feature)** Run with OpenAI Batch API mode to save cost! See the corresponding [section](#new-feature-run-the-main-script-with-openai-batch-api-mode) for how to use it.
+**(New Feature)** Run with *OpenAI Batch API* to save cost! See the corresponding [section](#new-feature-run-the-main-script-with-openai-batch-api-mode) for how to use it. (**Note:** Only the non-streaming agents are supported.)
 
 ![Figure 1](./Figure1.png)
 

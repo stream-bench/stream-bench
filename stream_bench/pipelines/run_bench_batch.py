@@ -1,4 +1,5 @@
 """Run non-streaming methods with OpenAI Batch APIs to save costs."""
+NON_STREAMING_METHODS = ["zeroshot", "cot", "fewshot"]  # NOTE: add more methods here
 
 import os
 import time
@@ -192,6 +193,8 @@ def get_step_to_info(batch_download_path: Path) -> dict[int, dict]:
 def main():
     args = setup_args()
     agent_cfg = yaml.safe_load(args.agent_cfg.read_text())
+    if agent_cfg["agent_name"] not in NON_STREAMING_METHODS:
+        raise ValueError(f"Only non-streaming methods are supported for the Batch API mode. Please choose one from {NON_STREAMING_METHODS}")
     assert agent_cfg["llm"]["series"] == "openai"
     bench_cfg = yaml.safe_load(args.bench_cfg.read_text())
     assert 'bench_name' in bench_cfg
