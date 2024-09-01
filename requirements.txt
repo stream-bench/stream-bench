@@ -34,6 +34,7 @@ wandb
 # Utility functions
 tqdm
 colorama
+jsonlines
 func_timeout
 ipykernel
 bitsandbytes
