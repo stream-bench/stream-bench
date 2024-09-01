@@ -4,7 +4,7 @@
 
 **Paper link:** https://arxiv.org/abs/2406.08747
 
-**Note:** Work in progress. Feel free to leave github issues / pull requests if you encounter any issues!
+![Figure 1](./Figure1.png)
 
 ## Steps to Reproduce the Experiments
 
