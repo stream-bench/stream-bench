@@ -85,6 +85,7 @@ class MATHBench(Bench):
         self.seed = seed
         self.feedback = feedback
         self.llm = OpenAIChat(model_name=self.EVAL_LLM)
+        self.answer_extraction = kwargs.get("answer_extraction", "answer")
 
     def get_dataset(self) -> Dataset:
         return self.dataset[self.split].shuffle(seed=self.seed)
@@ -122,9 +123,12 @@ class MATHBench(Bench):
         return {"accuracy": self.n_correct / len(self.predictions)}
 
     def postprocess_generation(self, res: str, idx: int = -1) -> str:
-        ANSWER_PATTERN = r"(?i)Answer\s*:\s*([^\n]+)"
-        ans_match = re.search(ANSWER_PATTERN, res)
-        extracted_answer = ans_match.group(1) if ans_match else "Answer not found"
+        if self.answer_extraction == "answer":
+            ANSWER_PATTERN = r"(?i)Answer\s*:\s*([^\n]+)"
+            ans_match = re.search(ANSWER_PATTERN, res)
+            extracted_answer = ans_match.group(1) if ans_match else "Answer not found"
+        elif self.answer_extraction == "boxed":
+            extracted_answer = self.math_normalizer(res)
         return extracted_answer
 
     def process_results(
