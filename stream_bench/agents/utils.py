@@ -42,15 +42,15 @@ def get_llm(series: str, model_name: str):
     elif series == 'anthropic':
         from stream_bench.llms.claude import ClaudeChat
         return ClaudeChat(model_name)
+    elif series == 'hf_model':
+        from stream_bench.llms.hf_model import HFModel
+        return HFModel(model_name)
+    elif series == "groq_model":
+        from stream_bench.llms.groq_model import GroqModel
+        return GroqModel(model_name)
     # elif series == 'anthropic_vertex':
     #     from stream_bench.llms.vertex_claude import ClaudeChat
     #     return ClaudeChat(model_name)
-    # elif series == 'hf_model':
-    #     from stream_bench.llms.hf_model import HFModel
-    #     return HFModel(model_name)
-    # elif series == "groq":
-    #     from stream_bench.llms.groq_model import GroqModel
-    #     return GroqModel(model_name)
     # elif series == "together":
     #     from stream_bench.llms.together_model import TogetherModel
     #     return TogetherModel(model_name)

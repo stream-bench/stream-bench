@@ -2,7 +2,7 @@ import re
 import copy
 import textwrap
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("default")
 
 from stream_bench.benchmarks.base import Bench
 from stream_bench.benchmarks.utils import strip_all_lines
@@ -192,7 +192,7 @@ class DS1000(Bench):
         for row in self.FEWSHOTS:
             shot = self.get_shot_template().format(
                 question=row["prompt"].strip(),
-                answer=row["reference_code"].strip()
+                answer=row["reference_code"]
             )
             shots.append(shot)
         return "\n\n\n".join(shots).replace("\\", "\\\\")
@@ -202,7 +202,7 @@ class DS1000(Bench):
         exec_context = self.extract_after_exec_content(row["code_context"])
         row_input = copy.deepcopy(row)
         row_input["question"] = row["prompt"].strip()
-        row_input["label_text"] = row["reference_code"].strip()
+        row_input["label_text"] = row["reference_code"]
         row_input["prompt_zeroshot"] = self.get_zeroshot_prompt(question=row_input["question"], exec_context=exec_context)
         row_input["prompt_fewshot"] = self.get_fewshot_prompt(question=row_input["question"], exec_context=exec_context)
         row_input["prompt_cot"] = self.get_cot_prompt(question=row_input["question"], exec_context=exec_context)
@@ -225,7 +225,7 @@ class DS1000(Bench):
                 pattern=r"```python(.*?)```",
                 string=generation,
                 flags=re.DOTALL
-            ).group(1).strip()
+            ).group(1)
         except Exception as e:
             match = generation
         return match
@@ -258,7 +258,7 @@ class DS1000(Bench):
             + 'test_execution(code)\n'
             + ('test_string(code)\n'  if 'test_string(' in code_context  else '\n')
         )
-        results = execution.check_correctness_single_proc(
+        results = execution.check_correctness(
             test_program,
             timeout=self.timeout,
             completion_id=completion_id
@@ -293,7 +293,7 @@ class DS1000(Bench):
             "question": row["prompt"].strip(),
             "self_output": pred_str,
             "is_correct": res["correct"],
-            "ground_truth": row["reference_code"].strip(),
+            "ground_truth": row["reference_code"],
             "shot_template": self.get_shot_template(),
             "memprompt_template": self.get_memprompt_template()
         }

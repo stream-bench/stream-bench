@@ -204,7 +204,7 @@ class HotpotQADistract(Bench):
         return strip_all_lines(prompt)
 
     def get_fewshot_text(self) -> str:
-        shot_rows = self.dataset["train"].shuffle(seed=self.seed)
+        shot_rows = self.dataset["train"]
         shots = list()
         for i in range(self.NUM_SHOTS):
             row = shot_rows[i]
