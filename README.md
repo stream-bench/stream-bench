@@ -4,6 +4,8 @@
 
 **Paper link:** https://arxiv.org/abs/2406.08747
 
+**(New Feature)** Run with OpenAI Batch API mode to save cost! See the corresponding [section](#new-feature-run-the-main-script-with-openai-batch-api-mode) for how to use it.
+
 ![Figure 1](./Figure1.png)
 
 ## Steps to Reproduce the Experiments
@@ -52,6 +54,16 @@ python -m stream_bench.pipelines.run_bench \
     --use_wandb
 ```
 If you want to run other baselines on the dataset, you can modify `--agent_cfg` to different `<baseline_name>.yml` files, which are located in the `./configs/agent` folder.
+
+### (New Feature) Run the Main Script with OpenAI Batch API mode
+To save cost, you can run the main script with OpenAI Batch API mode as follows:
+```
+python -m stream_bench.pipelines.run_bench_batch \
+    --agent_cfg "configs/agent/<agent_name>.yml" \
+    --bench_cfg "configs/bench/<bench_name>.yml" \
+    --entity "photocopier" \
+    --use_wandb
+```
 
 ### (Optional) Interactive Notebook
 If you want a step-by-step walkthrough, please refer to `playground.ipynb`.
