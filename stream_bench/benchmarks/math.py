@@ -104,11 +104,25 @@ class MATHBench(Bench):
         Remember to put your answer on its own line after "Answer:", and you do not need to use a \\boxed command."""
         return strip_all_lines(prompt)
 
+    @staticmethod
+    def get_cot_json_prompt(question: str) -> str:
+        prompt = f"""\
+        Solve the following math problem step by step before providing your answer.
+
+        {question}
+
+        Provide your output in the following JSON format:
+        ```json
+        {{"reasoning": <your reasoning>, "answer": <your answer>}}
+        ```"""
+        return strip_all_lines(prompt)
+
     def get_input(self, row: dict) -> dict:
         row_input = dict()
         row_input["question"] = row["problem"]
         row_input["prompt_zeroshot"] = self.get_zeroshot_prompt(row["problem"])
         row_input["prompt_cot"] = self.get_cot_prompt(row["problem"])
+        row_input["prompt_cot_json"] = self.get_cot_json_prompt(row["problem"])
         return row_input
 
     def get_output(self, row: dict) -> str:
@@ -129,6 +143,18 @@ class MATHBench(Bench):
             extracted_answer = ans_match.group(1) if ans_match else "Answer not found"
         elif self.answer_extraction == "boxed":
             extracted_answer = self.math_normalizer(res)
+        elif self.answer_extraction == "json":
+            json_str = extract_json_string(res)
+            try:
+                json_obj = json.loads(json_str)
+                if "answer" in json_obj:
+                    extracted_answer = json_obj["answer"]
+                else:
+                    print(Fore.RED + f"Answer not found in the JSON object" + Style.RESET_ALL)
+                    extracted_answer = res
+            except json.JSONDecodeError:
+                print(Fore.RED + f"JSONDecodeError: failed to extract answer" + Style.RESET_ALL)
+                extracted_answer = res
         return extracted_answer
 
     def process_results(
@@ -397,8 +423,5 @@ class MATHBench(Bench):
         return text
 
 if __name__ == "__main__":
-    math = MATHBench()
-    for i, row in enumerate(math.get_dataset()):
-        if i == 50:
-            break
-        print(math.get_output(row))
+    q = "..."
+    print(MATHBench.get_cot_json_prompt(q))

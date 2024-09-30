@@ -62,6 +62,13 @@ def setup_args() -> Namespace:
 
     return parser.parse_args()
 
+def get_prompt(agent: Agent, bench: Bench, row: dict) -> str:
+    x = bench.get_input(row)
+    prompt_name = f"prompt_{agent.config['agent_name']}"
+    if agent.config.get("mode", False):
+        prompt_name += f"_{agent.config['mode']}"
+    return x[prompt_name]
+
 def prepare_batch_file(
     agent: Agent,
     bench: Bench,
@@ -79,10 +86,12 @@ def prepare_batch_file(
     # Save batch inputs to the file
     if not os.path.exists(save_path):
         print(f"Saving the batch file to {save_path}")
+        # Check for existence of response_format
+        response_format = agent.config.get("response_format", None)
         with open(save_path, 'w') as f:
             for time_step, row in enumerate(tqdm(bench.get_dataset(), dynamic_ncols=True)):
                 custom_id = f"step-{time_step}"
-                prompt = bench.get_input(row)[f"prompt_{agent.config['agent_name']}"]
+                prompt = get_prompt(agent, bench, row)
                 msg = {
                     "custom_id": custom_id,
                     "method": "POST",
@@ -98,6 +107,8 @@ def prepare_batch_file(
                         "top_logprobs": OpenAIChat.TOP_LOGPROBS,
                     }
                 }
+                if response_format is not None:
+                    msg["body"]["response_format"] = response_format
                 f.write(json.dumps(msg) + "\n")
     # Check file size
     MAX_FILE_SIZE_MB = 100
