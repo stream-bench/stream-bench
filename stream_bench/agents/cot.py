@@ -21,6 +21,8 @@ class CoTAgent(Agent):
         # Initialize variable for tracking
         self.reset_log_info()
         # Inference
+        if self.config.get("mode", None) == "json":
+            prompt_cot = kwargs["prompt_cot_json"]
         pred_text, pred_info = self.llm(prompt=prompt_cot, max_tokens=self.llm_config["max_tokens"], temperature=self.llm_config["temperature"])
         # logging
         self.update_log_info(log_data={

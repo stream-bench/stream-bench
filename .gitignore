@@ -2,3 +2,4 @@ wandb
 log
 __pycache__
 data
+*.jsonl

@@ -1,3 +1,4 @@
+from .base import Agent
 from .zeroshot import ZeroShotAgent
 from .fewshot import FewShotAgent
 from .cot import CoTAgent
