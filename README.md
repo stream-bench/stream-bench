@@ -6,6 +6,9 @@
 
 **(New Feature)** Run with *OpenAI Batch API* to save cost! See the corresponding [section](#new-feature-run-the-main-script-with-openai-batch-api-mode) for how to use it. (**Note:** Only the non-streaming agents are supported.)
 
+![Figure 0](./Figure0.png)
+<p align="center"><em>Overview of StreamBench, illustrating the continuous improvement process of language agents in streaming scenarios. (Figure reference: <a href="https://www.chimechallenge.org/current/workshop/CHiME2024_Lee.pdf" target="_blank">CHiME 2024 Keynote @Interspeech</a>)</em></p>
+
 ![Figure 1](./Figure1.png)
 
 ## Steps to Reproduce the Experiments
