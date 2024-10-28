@@ -80,7 +80,8 @@ def main():
             config=merge_dicts(dicts=[agent_cfg, bench_cfg])  # NOTE: agent configurations and benchmark configurations
         )
 
-    for time_step, row in enumerate(tqdm(bench.get_dataset(), dynamic_ncols=True)):
+    pbar = tqdm(bench.get_dataset(), dynamic_ncols=True, desc="Streaming Progress")
+    for time_step, row in enumerate(pbar):
         try:
             row['time_step'] = time_step
             x = bench.get_input(row)  # remove ground truth related information
@@ -112,6 +113,8 @@ def main():
             agent.log(label_text=label)
         except (KeyError, IndexError) as e:
             print(e)
+        # Update the description of the progress bar
+        pbar.set_postfix(acc=f"{pred_res['rolling_acc'] * 100:.2f}%")
 
     metrics = bench.get_metrics()
     print(metrics)
