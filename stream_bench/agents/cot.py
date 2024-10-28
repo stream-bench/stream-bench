@@ -23,7 +23,12 @@ class CoTAgent(Agent):
         # Inference
         if self.config.get("mode", None) == "json":
             prompt_cot = kwargs["prompt_cot_json"]
-        pred_text, pred_info = self.llm(prompt=prompt_cot, max_tokens=self.llm_config["max_tokens"], temperature=self.llm_config["temperature"])
+        pred_text, pred_info = self.llm(
+            prompt=prompt_cot,
+            max_tokens=self.llm_config["max_tokens"],
+            temperature=self.llm_config["temperature"],
+            top_logprobs=self.llm_config["top_logprobs"]
+        )
         # logging
         self.update_log_info(log_data={
             "input_pred": prompt_cot,
@@ -36,12 +41,12 @@ class CoTAgent(Agent):
         })
         json_text = extract_json_string(pred_text)
         parse_text = pred_text
-        if json_text and (self.config["bench_name"] == "ddxplus"):
+        if json_text and (self.config["bench_name"] in {"ddxplus", "gpqa_diamond", "gpqa_main", "gpqa_extended"}):
             try:
                 obj = json.loads(json_text)
-                if "rationale" not in obj:
-                    parse_text += "\nWarning: rationale not found in the output."
-                    print(Fore.YELLOW + "Lack rationale" + Style.RESET_ALL)
+                # if "rationale" not in obj:
+                    # parse_text += "\nWarning: rationale not found in the output."
+                    # print(Fore.YELLOW + "Lack rationale" + Style.RESET_ALL)
                 if "answer" not in obj:
                     parse_text += "\nWarning: answer not found in the output"
                     print(Fore.RED + "Lack answer" + Style.RESET_ALL)

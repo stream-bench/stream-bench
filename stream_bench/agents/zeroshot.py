@@ -20,7 +20,12 @@ class ZeroShotAgent(Agent):
         # Initialize variable for tracking
         self.reset_log_info()
         # Inference
-        pred_text, pred_info = self.llm(prompt=prompt_zeroshot, max_tokens=self.llm_config["max_tokens"], temperature=self.llm_config["temperature"])
+        pred_text, pred_info = self.llm(
+            prompt=prompt_zeroshot,
+            max_tokens=self.llm_config["max_tokens"],
+            temperature=self.llm_config["temperature"],
+            top_logprobs=self.llm_config["top_logprobs"]
+        )
         # logging
         self.update_log_info(log_data={
             "input_pred": prompt_zeroshot,

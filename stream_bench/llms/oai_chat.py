@@ -16,13 +16,14 @@ class OpenAIChat(LLM):
 
     @retry_with_exponential_backoff
     def __call__(self, prompt: str, max_tokens: int = 1024, temperature=0.0, **kwargs) -> tuple[str, dict]:
+        top_logprobs = kwargs.pop("top_logprobs", self.TOP_LOGPROBS)
         response = self.client.chat.completions.create(
             model=self.model_name,
             messages=[{'role': 'user', 'content': prompt}],
             temperature=float(temperature),
             max_tokens=int(max_tokens),
             logprobs=True,
-            top_logprobs=self.TOP_LOGPROBS,
+            top_logprobs=top_logprobs,
             **kwargs
         )
         log_prob_seq = response.choices[0].logprobs.content
