@@ -1,0 +1,3 @@
+bench_name: "gpqa_diamond"
+split: "train"
+seed: 42

@@ -6,6 +6,7 @@ from .toolbench import ToolBench
 from .gsm8k import GSM8KBench
 from .math import MATHBench
 from .text_to_sql import create_bird, create_cosql, create_spider
+from .gpqa import create_gpqa_diamond, create_gpqa_main, create_gpqa_extended
 
 classes = locals()
 
@@ -19,6 +20,9 @@ TASKS = {
     "bird": create_bird(),
     "cosql": create_cosql(),
     "spider": create_spider(),
+    "gpqa_diamond": create_gpqa_diamond(),
+    "gpqa_main": create_gpqa_main(),
+    "gpqa_extended": create_gpqa_extended(),
 }
 
 def load_benchmark(benchmark_name) -> Bench:
